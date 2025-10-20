@@ -5,21 +5,36 @@ for _ in range(int(input())):
     data = []
     m = 0
     x_count = {}
+    y_data = {
+        0: set(),
+        1: set(),
+    }
+
     for _ in range(n):
         x, y = map(int, input().split())
-        data.append((x, y))
-        x_count[x] = x_count.get(x, 0) + 1
-    x_list = list(x_count)
-    m = len(list(filter(lambda key: x_count[key] == 2, x_count)))
-    result = (n -2) * m
+        y_data[y].add(x)
+
+    y_data_list = {
+        0: list(y_data[0]),
+        1: list(y_data[1]),
+    }
+
+    m = len(y_data[0] & y_data[1])
+    result = (n - 2) * m
     for y in (0, 1):
-        for x1_ind in range(0, len(x_list) - 1):
-            x1 = x_list[x1_ind]
-            for x2_ind in range(x1_ind + 1, len(x_list)):
-                x2 = x_list[x2_ind]
-                if abs(x2 - x1) % 2 == 0:
-                    point = (abs(x2 - x1) // 2, 1 if y == 0 else 0)
-                    if point in data:
-                        result += 1
+        not_y = 1 if y == 0 else 0
+        y_data_len = len(y_data[y])
+        for x_ind in range(y_data_len - 1):
+            x1 = y_data_list[y][x_ind]
+            x2 = None
+            for i in (1, 2):
+                if x_ind + i < y_data_len and y_data_list[y][x_ind + i] - x1 == 2:
+                    x2 = y_data_list[y][x_ind + i]
+            if x2 is None:
+                continue
+            
+            if (x1 + 1) in y_data[not_y]:
+                result += 1
+
     print(result)
 
