@@ -2,9 +2,7 @@
 
 for _ in range(int(input())):
     n = int(input())
-    data = []
-    m = 0
-    x_count = {}
+
     y_data = {
         0: set(),
         1: set(),
@@ -21,8 +19,12 @@ for _ in range(int(input())):
 
     m = len(y_data[0] & y_data[1])
     result = (n - 2) * m
-    for y in (0, 1):
+
+    for y in y_data:
+        
         not_y = 1 if y == 0 else 0
+        # not_y = int(not(bool(y)))
+
         y_data_len = len(y_data[y])
         for x_ind in range(y_data_len - 1):
             x1 = y_data_list[y][x_ind]
