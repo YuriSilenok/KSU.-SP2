@@ -2,36 +2,57 @@ for _ in range(int(input())):
     n, k, x = map(int, input().split())
     a_set = set(map(int, input().split()))
     a_list = sorted(a_set)
-    b = set(range(k)) | set(range(x, x - k, -1))
-    data = dict()
-    for i in range(len(a_list)):
 
-        for ki in range(1, k + 1):
-            if a_list[i] - k >= 0:
-                b.add(a_list[i] - k)
-            if a_list[i] + k <= x:
-                b.add(a_list[i] + k)
-            s = (a_list[i-1] + a_list[i]) // 2
-            b.add(s)
-            if i > 0:
-                if s - k >= 0:
-                    b.add(s - k)
-                elif s + k <= x:
-                    b.add(s + k)
+    def get_min_len(a, i):
+        """Возвращает расстояние от точки i до ближайшей ai
+        a должен быть отсортррован"""
 
+        if i <= a[0]:
+            return a[0] - i
         
-    b = b - a_set
+        if i >= a[-1]:
+            return i - a[-1]
+        
+        ai_left, ai_right = 0, len(a) - 1
+        while ai_right - ai_left > 1:
+            if a[ai_left] == i or a[ai_right] == i:
+                return 0
 
-    for bi in b:
-        min_len = x
-        for ai in a_set:
-            if abs(ai - bi) < min_len:
-                min_len = abs(ai - bi)
-        data[bi] = min_len
-    data_key_sort = set(list(sorted(data, key=lambda key: data[key], reverse=True))[:k])
+            med = (ai_right + ai_left) // 2
+            if a[med] == i:
+                return 0
+
+            if a[ai_left] < i < a[med]:
+                ai_right = med
+            elif a[med] < i < a[ai_right]:
+                ai_left = med
+
+        return min(i - a[ai_left], a[ai_right] - i)
+
+    data = {
+        0: 0 if 0 in a_set else get_min_len(a_list, 0),
+        x: 0 if x in a_set else get_min_len(a_list, x),
+    }
+    result = set()
+
+    for ai in range(len(a_list) - 1):
+        med = (a_list[ai] + a_list[ai + 1]) // 2
+        if med not in data:
+            data[med] = 0 if med in a_set else get_min_len(a_list, med)
+
+    for ki in range(k):
+        
+        max_key = max(data, key=data.get)
+        result.add(max_key)
+        
+        key_left = max_key - 1
+        if key_left >= 0 and key_left not in result and key_left not in data:
+            data[key_left] = 0 if key_left in a_set else get_min_len(a_list, key_left)
+        
+        key_right = max_key + 1
+        if key_right <= x and key_right not in result and key_right not in data:
+            data[key_right] = 0 if key_right in a_set else get_min_len(a_list, key_right)
+        
+        del data[max_key]
     
-    if len(data_key_sort) < k:
-       data_key_sort = data_key_sort | set(a_list[:(k - len(data_key_sort))])
-    print(*sorted(data_key_sort))
-
-
+    print(*sorted(result))
