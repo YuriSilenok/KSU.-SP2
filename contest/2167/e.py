@@ -41,7 +41,6 @@ for _ in range(int(input())):
             data[med] = 0 if med in a_set else get_min_len(a_list, med)
 
     for ki in range(k):
-        
         max_key = max(data, key=data.get)
         result.add(max_key)
         
